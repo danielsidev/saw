@@ -1,0 +1,33 @@
+{
+  "name": "sales-analysis-watch",
+  "version": "1.0.0",
+  "description": "A Watcher Service for Sales Analysis",
+  "main": "src/main.js",
+  "scripts": {
+    "debug": "NODE_ENV=local PORT_SAW=7000 node --inspect src/main.js",
+    "local": "NODE_ENV=local PORT_SAW=7000 nodemon src/main.js",
+    "dev": "pm2 start ecosystem.config.js --env development --watch && pm2 logs",
+    "hmg": "pm2 start ecosystem.config.js --env homolog",
+    "prod": "pm2 start ecosystem.config.js --env production",
+    "stop": "pm2 stop sales_analysis",
+    "logs": "pm2 logs",
+    "clean": "pm2 delete all",
+    "test": "jest",
+    "test-unit": "jest __tests__/unit",
+    "test-integration": "jest __tests__/integration/transactions.integration.test.js && jest __tests__/integration/payables.integration.test.js && exit 1"
+  },
+  "keywords": [
+    "sales",
+    "analyzer",
+    "watcher"
+  ],
+  "author": "Daniel Siqueira <adeptodaniel@gmail.com> - http://danielsiqueira.net",
+  "license": "ISC",
+  "dependencies": {
+    "pm2": "^4.2.1"
+  },
+  "devDependencies": {
+    "jest": "^24.9.0",
+    "nodemon": "^2.0.1"
+  }
+}
