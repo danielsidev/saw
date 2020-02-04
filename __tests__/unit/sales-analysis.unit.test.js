@@ -1,5 +1,4 @@
 let SalesAnalysisBusiness = require('../../src/business/sales-analysis.business');
-const moment = require('moment');
 
 describe('Business Rules', () => {
 

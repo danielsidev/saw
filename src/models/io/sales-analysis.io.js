@@ -1,5 +1,5 @@
 const fs = require('fs');
-class SalesAnalysisDao {
+class SalesAnalysisIo {
     constructor(){
         this.homePath = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
         this.dataPath = `${this.homePath}/data`;
@@ -8,7 +8,6 @@ class SalesAnalysisDao {
     }
     createPath(path){
         fs.mkdirSync(path);
-        console.log(`I created path with success: ${path}`);
      }
     checkPath(){ 
         let existPath = false;       
@@ -55,4 +54,4 @@ class SalesAnalysisDao {
 
     }
 }
-module.exports = SalesAnalysisDao;
+module.exports = SalesAnalysisIo;

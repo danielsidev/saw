@@ -1,9 +1,9 @@
-let SalesAnalysisDao = require('../models/dao/sales-analysis.dao');
+let SalesAnalysisIo = require('../models/io/sales-analysis.io');
 let SalesAnalysisBusiness = require('../business/sales-analysis.business');
 const fs = require('fs');
 class SalesAnalysisController{
     constructor(){
-        this.analsysisDao = new SalesAnalysisDao();
+        this.analsysisIo = new SalesAnalysisIo();
         this.analsysisBusinnes = new SalesAnalysisBusiness();
     }
     async mountDataObject(data){
@@ -62,35 +62,36 @@ class SalesAnalysisController{
         let timestamp = date.getTime();
         return timestamp;
     }
-    run(){
-        if(this.analsysisDao.checkPath()){
+    async processFiles(filename){
+        let fullPath = `${this.analsysisIo.inPath}/${filename}`
+        if(fs.existsSync(fullPath)){
+            console.log(`Watching directory: ${filename} added!`)
+            let data    = await this.analsysisIo.recoveryFile(filename);
+            let fileOut = `${filename}-report-${this.getTimeStamp()}`;
             
-            this.analsysisDao.watchNewFiles(this.analsysisDao.inPath, async (filename)=>{
-                let fullPath = `${this.analsysisDao.inPath}/${filename}`
-                if(fs.existsSync(fullPath)){
-                    console.log(`Watching directory: ${filename} added!`)
-                    let data    = await this.analsysisDao.recoveryFile(filename);
-                    let fileOut = `${filename}-report-${this.getTimeStamp()}`;
-                    
-                    try {
-                        let objFile = await this.mountDataObject(data);
-                        console.log(JSON.stringify(objFile.sales));
-                        let clientTotal     = this.analsysisBusinnes.getTotalClients(objFile.clients);
-                        let vendorTotal     = this.analsysisBusinnes.getTotalClients(objFile.vendor);
-                        let idSaleExpensive = this.analsysisBusinnes.getIdExpensiveSale(objFile.sales);
-                        let worstSeller     = this.analsysisBusinnes.getWorstSeller(objFile.sales);
-                        let result='';
-                            result+=`clientTotal:${clientTotal}\n`; 
-                            result+=`vendorTotal:${vendorTotal}\n`
-                            result+=`idSaleExpensive:${idSaleExpensive}\n`;
-                            result+=`worstSeller:${worstSeller}`;
-                        await this.analsysisDao.constructFile(fileOut, result);
-                    } catch (error) {
-                        console.log(error);
-                    }              
-                }else{
-                    console.log(`Watching directory: ${filename} removed!`)
-                }
+            try {
+                let objFile = await this.mountDataObject(data);
+                let clientTotal     = this.analsysisBusinnes.getTotalClients(objFile.clients);
+                let vendorTotal     = this.analsysisBusinnes.getTotalClients(objFile.vendor);
+                let idSaleExpensive = this.analsysisBusinnes.getIdExpensiveSale(objFile.sales);
+                let worstSeller     = this.analsysisBusinnes.getWorstSeller(objFile.sales);
+                let result='';
+                    result+=`clientTotal:${clientTotal}\n`; 
+                    result+=`vendorTotal:${vendorTotal}\n`
+                    result+=`idSaleExpensive:${idSaleExpensive}\n`;
+                    result+=`worstSeller:${worstSeller}`;
+                await this.analsysisIo.constructFile(fileOut, result);
+            } catch (error) {
+                console.log(error);
+            }              
+        }else{
+            console.log(`Watching directory: ${filename} removed!`)
+        }
+    }
+    run(){
+        if(this.analsysisIo.checkPath()){
+            this.analsysisIo.watchNewFiles(this.analsysisIo.inPath, async (filename)=>{
+                await this.processFiles(filename);
             });
         }else{
             console.log(`Sorry! The path doesn't exist. I can't import and export data!`);

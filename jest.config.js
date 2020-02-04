@@ -164,6 +164,7 @@ module.exports = {
 
   // Setting this value to "fake" allows the use of fake timers for functions such as "setTimeout"
   // timers: "real",
+  
 
   // A map from regular expressions to paths to transformers
   // transform: null,
@@ -184,4 +185,5 @@ module.exports = {
 
   // Whether to use watchman for file crawling
   // watchman: true,
+  setupFilesAfterEnv: ['./jest.setup.js']
 };
